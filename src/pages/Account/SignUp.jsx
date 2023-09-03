@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
+import { Notification } from "../../components/Notification/Notification";
+import * as apiService from "../../modules/service/apiService";
 
 const SignUp = () => {
+
   // ============= Initial State Start here =============
   const [clientName, setClientName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,7 +71,7 @@ const SignUp = () => {
   };
   // ================= Email Validation End here ===============
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (checked) {
       if (!clientName) {
@@ -94,15 +97,15 @@ const SignUp = () => {
       if (!address) {
         setErrAddress("Enter your address");
       }
-      if (!city) {
-        setErrCity("Enter your city name");
-      }
-      if (!country) {
-        setErrCountry("Enter the country you are residing");
-      }
-      if (!zip) {
-        setErrZip("Enter the zip code of your area");
-      }
+      // if (!city) {
+      //   setErrCity("Enter your city name");
+      // }
+      // if (!country) {
+      //   setErrCountry("Enter the country you are residing");
+      // }
+      // if (!zip) {
+      //   setErrZip("Enter the zip code of your area");
+      // }
       // ============== Getting the value ==============
       if (
         clientName &&
@@ -110,22 +113,23 @@ const SignUp = () => {
         EmailValidation(email) &&
         password &&
         password.length >= 6 &&
-        address &&
-        city &&
-        country &&
-        zip
+        address
       ) {
-        setSuccessMsg(
-          `Hello dear ${clientName}, Welcome you to OREBI Admin panel. We received your Sign up request. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
-        );
-        setClientName("");
-        setEmail("");
-        setPhone("");
-        setPassword("");
-        setAddress("");
-        setCity("");
-        setCountry("");
-        setZip("");
+        const res = await apiService.signUpAccount(clientName, email, password, phone, address);
+        if (res.code === 200) {
+          Notification("Đăng ký thành công", res.message, "success");
+          setClientName("");
+          setEmail("");
+          setPhone("");
+          setPassword("");
+          setAddress("");
+          setCity("");
+          setCountry("");
+          setZip("");
+        }
+        else {
+          Notification("Đăng ký thất bại", res.response.data.message, "error");
+        }
       }
     }
   };
@@ -222,7 +226,7 @@ const SignUp = () => {
                 {/* client name */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Full Name
+                    Full Name <span className="text-red-600">*</span>
                   </p>
                   <input
                     onChange={handleName}
@@ -241,7 +245,7 @@ const SignUp = () => {
                 {/* Email */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Work Email
+                    Work Email <span className="text-red-600">*</span>
                   </p>
                   <input
                     onChange={handleEmail}
@@ -260,7 +264,7 @@ const SignUp = () => {
                 {/* Phone Number */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Phone Number
+                    Phone Number <span className="text-red-600">*</span>
                   </p>
                   <input
                     onChange={handlePhone}
@@ -279,7 +283,7 @@ const SignUp = () => {
                 {/* Password */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Password
+                    Password <span className="text-red-600">*</span>
                   </p>
                   <input
                     onChange={handlePassword}
@@ -298,7 +302,7 @@ const SignUp = () => {
                 {/* Address */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Address
+                    Address <span className="text-red-600">*</span>
                   </p>
                   <input
                     onChange={handleAddress}
@@ -394,6 +398,9 @@ const SignUp = () => {
                 >
                   Create Account
                 </button>
+                <div className="flex items-center text-sm">
+                  <p><span className="text-red-600">*</span> is a required field</p>
+                </div>
                 <p className="text-sm text-center font-titleFont font-medium">
                   Don't have an Account?{" "}
                   <Link to="/signin">

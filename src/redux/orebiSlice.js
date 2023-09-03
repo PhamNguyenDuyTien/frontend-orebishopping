@@ -10,6 +10,7 @@ export const orebiSlice = createSlice({
   name: "orebi",
   initialState,
   reducers: {
+    // Products
     addToCart: (state, action) => {
       const item = state.products.find(
         (item) => item._id === action.payload._id
@@ -46,9 +47,17 @@ export const orebiSlice = createSlice({
     resetCart: (state) => {
       state.products = [];
     },
+
+    // View
     setView: (state, action) => {
       state.view = action.payload;
     },
+
+    // userInfo
+    detailUser: (state, action) => {
+      state.userInfo[0] = action.payload;
+    },
+
   },
 });
 
@@ -59,5 +68,6 @@ export const {
   deleteItem,
   resetCart,
   setView,
+  detailUser,
 } = orebiSlice.actions;
 export default orebiSlice.reducer;

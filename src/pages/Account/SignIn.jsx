@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logoLight } from "../../assets/images";
+import * as apiService from "../../modules/service/apiService";
 
 const SignIn = () => {
+  const navigate = useNavigate()
   // ============= Initial State Start here =============
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +26,7 @@ const SignIn = () => {
     setErrPassword("");
   };
   // ============= Event Handler End here ===============
-  const handleSignUp = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
 
     if (!email) {
@@ -36,11 +38,20 @@ const SignIn = () => {
     }
     // ============== Getting the value ==============
     if (email && password) {
-      setSuccessMsg(
-        `Hello dear, Thank you for your attempt. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
-      );
-      setEmail("");
-      setPassword("");
+      const res = await apiService.signInAccount(email, password)
+      console.log({res})
+      console.log("click sign in")
+      if (res.code === 200) {
+        localStorage.setItem("access_token", res.data?.access_token);
+        localStorage.setItem("refresh_token", res.data?.refresh_token);
+        setEmail("");
+        setPassword("");
+        navigate("/");
+      }
+      else {
+        // Notification("Đăng nhập thất bại", res.response.data.message, "error");
+        console.log(res)
+      }
     }
   };
   return (
@@ -176,7 +187,7 @@ const SignIn = () => {
                 </div>
 
                 <button
-                  onClick={handleSignUp}
+                  onClick={handleSignIn}
                   className="bg-primeColor hover:bg-black text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md  duration-300"
                 >
                   Sign In
