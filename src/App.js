@@ -36,16 +36,36 @@ import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
 // import Bar from "./scenes/bar";
 import Form from "./scenes/form";
+import Profile from "./pages/Account/Profile";
 // import Line from "./scenes/line";
 // import Pie from "./scenes/pie";
 // import FAQ from "./scenes/faq";
 // import Geography from "./scenes/geography";
+import * as apiService from "./modules/service/apiService";
+import { decodeAccessToken } from "./modules/JWT/jwt";
 
 
 
 
 function App() {
 
+  apiService.apiService.interceptors.request.use(
+    async (config) => {
+      let access_token = localStorage.getItem("access_token");
+      const refreshToken = localStorage.getItem("refresh_token");
+      const decodeToken = decodeAccessToken(access_token);
+      const currentTime = new Date().getTime();
+      const now = Math.round(currentTime / 1000);
+      if (decodeToken.exp < now) {
+        const res = await apiService.refreshTokenApi(refreshToken);
+        access_token = localStorage.setItem("access_token", res.data.access_token)
+        config.headers['token'] = `Bearer ${res.data.access_token}`
+      }
+      return config;
+    }, (err) => {
+      return Promise.reject(err)
+    }
+  )
   return (
     <div className="font-bodyFont">
       <RouterProvider router={router} />
@@ -114,6 +134,8 @@ const router = createBrowserRouter(
         <Route path="/product/:_id" element={<ProductDetails />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/paymentgateway" element={<Payment />}></Route>
+      
+        <Route path="/profile" element={<Profile />}></Route>
       </Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>

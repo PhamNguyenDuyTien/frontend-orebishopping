@@ -4,10 +4,16 @@ import { HiOutlineMenuAlt4 } from "react-icons/hi";
 import { FaSearch, FaUser, FaCaretDown, FaShoppingCart } from "react-icons/fa";
 import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { paginationItems } from "../../../constants";
+import ListHeaderComp from "./ListHeaderComp";
+import { detailUser } from "../../../redux/orebiSlice";
+import * as apiService from "../../../modules/service/apiService";
 
 const HeaderBottom = () => {
+  const userLogin = useSelector(state => state.orebiReducer.userInfo);
+  const dispatch = useDispatch();
+
   const products = useSelector((state) => state.orebiReducer.products);
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
@@ -30,6 +36,17 @@ const HeaderBottom = () => {
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  const handleLogOut = async () => {
+    const access_token = localStorage.getItem("access_token");
+    const res = await apiService.logoutAccount(access_token);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    dispatch(detailUser({
+      success: false,
+      data: [],
+    }))
+  }
 
   useEffect(() => {
     const filtered = paginationItems.filter((item) =>
@@ -57,24 +74,12 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-20 z-50 bg-primeColor w-auto text-[#767676] h-auto p-4 pb-6"
               >
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Accessories
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Furniture
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Electronics
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Clothes
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Bags
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Home appliances
-                </li>
+                <ListHeaderComp nameElement="Accessories"/>
+                <ListHeaderComp nameElement="Furniture"/>
+                <ListHeaderComp nameElement="Electronics"/>
+                <ListHeaderComp nameElement="Clothes"/>
+                <ListHeaderComp nameElement="Bags"/>
+                <ListHeaderComp nameElement="Home appliances"/>
               </motion.ul>
             )}
           </div>
@@ -132,6 +137,11 @@ const HeaderBottom = () => {
           </div>
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
             <div onClick={() => setShowUser(!showUser)} className="flex">
+              {userLogin[0]?.success && 
+                (<span className="font-titleFont text-sm mr-3">
+                  {userLogin[0].data.name}
+                </span>)
+              }
               <FaUser />
               <FaCaretDown />
             </div>
@@ -142,22 +152,24 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-6 right-14 z-50 bg-primeColor w-44 text-[#767676] h-auto p-4 pb-6"
               >
-                <Link to="/signin">
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Login
-                  </li>
-                </Link>
-                <Link onClick={() => setShowUser(false)} to="/signup">
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Sign Up
-                  </li>
-                </Link>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Profile
-                </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Others
-                </li>
+                {!userLogin[0]?.success ? 
+                  <>
+                    <Link to="/signin">
+                      <ListHeaderComp nameElement="Login"/>
+                    </Link>
+                    <Link onClick={() => setShowUser(false)} to="/signup">
+                      <ListHeaderComp nameElement="Sign Up"/>
+                    </Link>
+                  </>
+                  : 
+                  <>
+                    <Link to="/signin" onClick={handleLogOut}>
+                      <ListHeaderComp nameElement="Logout"/>
+                    </Link>
+                  </>
+                }
+                <ListHeaderComp nameElement="Profile"/>
+                <ListHeaderComp nameElement="Others"/>
               </motion.ul>
             )}
             <Link to="/cart">
