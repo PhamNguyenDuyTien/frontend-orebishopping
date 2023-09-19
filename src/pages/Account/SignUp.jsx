@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import { Notification } from "../../components/Notification/Notification";
 import * as apiService from "../../modules/service/apiService";
@@ -402,7 +402,7 @@ const SignUp = () => {
                   <p><span className="text-red-600">*</span> is a required field</p>
                 </div>
                 <p className="text-sm text-center font-titleFont font-medium">
-                  Don't have an Account?{" "}
+                  Have an Account?{" "}
                   <Link to="/signin">
                     <span className="hover:text-blue-600 duration-300">
                       Sign in
