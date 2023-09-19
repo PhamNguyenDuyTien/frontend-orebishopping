@@ -19,6 +19,8 @@ const HeaderBottom = () => {
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
   const ref = useRef();
+  const userRef = useRef();
+  // Ref categories
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (ref?.current?.contains(e.target)) {
@@ -28,6 +30,17 @@ const HeaderBottom = () => {
       }
     });
   }, [show, ref]);
+
+  // Ref user
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (userRef?.current?.contains(e.target)) {
+        setShowUser(true);
+      } else {
+        setShowUser(false);
+      }
+    });
+  }, [showUser, userRef]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -46,6 +59,9 @@ const HeaderBottom = () => {
       success: false,
       data: [],
     }))
+    if(res.code === 200 ){
+        navigate("/signin");
+      }
   }
 
   useEffect(() => {
@@ -136,7 +152,7 @@ const HeaderBottom = () => {
             )}
           </div>
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
-            <div onClick={() => setShowUser(!showUser)} className="flex">
+            <div onClick={() => setShowUser(!showUser)} ref={userRef} className="flex">
               {userLogin[0]?.success && 
                 (<span className="font-titleFont text-sm mr-3">
                   {userLogin[0].data.name}
@@ -163,12 +179,14 @@ const HeaderBottom = () => {
                   </>
                   : 
                   <>
-                    <Link to="/signin" onClick={handleLogOut}>
+                    <div onClick={handleLogOut}>
                       <ListHeaderComp nameElement="Logout"/>
-                    </Link>
+                    </div>
                   </>
                 }
-                <ListHeaderComp nameElement="Profile"/>
+                <Link to="/profile">
+                  <ListHeaderComp nameElement="Profile"/>
+                </Link>
                 <ListHeaderComp nameElement="Others"/>
               </motion.ul>
             )}

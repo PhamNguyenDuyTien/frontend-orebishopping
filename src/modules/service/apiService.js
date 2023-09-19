@@ -45,6 +45,14 @@ export const logoutAccount = async (accessToken) => {
         .catch((err) => err);
 };
 
+export const forgotPassword = async (email) =>
+    await axios
+        .post(BASE_URL + "/user/reset-password", {
+            email,
+        })
+        .then((res) => res.data)
+        .catch((err) => err.response.data);
+
 export const detailUserLogin = async (id, accessToken) => {
     return await apiService
         .get(`/user/get-detail-user/${id}`, {
@@ -55,6 +63,27 @@ export const detailUserLogin = async (id, accessToken) => {
         .then((res) => res.data)
         .catch((err) => err);
 };
+
+export const verifyResetPassword = async (id, resetString) =>
+    await axios
+        .get(
+            BASE_URL +
+                `/user/verifyResetPassword/${id}` +
+                "/" +
+                `${resetString}`
+        )
+        .then((res) => res.data)
+        .catch((err) => err.response.data);
+
+export const updatePassword = async (userId, newPassword, confirmNewPassword) =>
+    await axios
+        .put(BASE_URL + "/user/updatePassword", {
+            userId,
+            newPassword,
+            confirmNewPassword,
+        })
+        .then((res) => res.data)
+        .catch((err) => err.response.data);
 
 export const refreshTokenApi = async (refreshToken) =>
     await axios

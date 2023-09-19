@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Banner from "../../components/Banner/Banner";
 import BannerBottom from "../../components/Banner/BannerBottom";
 import BestSellers from "../../components/home/BestSellers/BestSellers";
@@ -10,11 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { decodeAccessToken } from "../../modules/JWT/jwt";
 import { detailUser } from "../../redux/orebiSlice";
 import * as apiService from "../../modules/service/apiService";
+import { useNavigate } from "react-router-dom";
 
 
 const Home = () => {
-  const userLogin = useSelector(state => state.orebiReducer.userInfo);
-  // console.log({userLogin});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,7 +27,7 @@ const Home = () => {
           dispatch(detailUser({
             success: true,
             data: res.data,
-          }))
+          })) 
         }
       }
       else {
@@ -39,8 +38,7 @@ const Home = () => {
       }
     }
     fetchDetailUser()
-  }, [])
-
+  }, []);
 
   return (
     <div className="w-full mx-auto">

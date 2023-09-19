@@ -43,6 +43,7 @@ import Profile from "./pages/Account/Profile";
 // import Geography from "./scenes/geography";
 import * as apiService from "./modules/service/apiService";
 import { decodeAccessToken } from "./modules/JWT/jwt";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 
 
 
@@ -137,6 +138,7 @@ const router = createBrowserRouter(
       
         <Route path="/profile" element={<Profile />}></Route>
       </Route>
+      <Route path="/verifyResetPassword/:id/:resetstring" element={<ChangePassword />}></Route>
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
       <Route path="/" element={<LayoutAdmin />}>
